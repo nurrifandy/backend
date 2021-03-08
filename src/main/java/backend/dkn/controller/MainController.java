@@ -35,7 +35,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/api/auth")
 public class MainController {
     @Autowired
 	AuthenticationManager authenticationManager;
@@ -52,7 +51,7 @@ public class MainController {
 	@Autowired
 	JwtUtils jwtUtils;
 
-	@PostMapping("/signin")
+	@PostMapping("/login")
 	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
 		Authentication authentication = authenticationManager.authenticate(
@@ -62,7 +61,7 @@ public class MainController {
 		String jwt = jwtUtils.generateJwtToken(authentication);
 		
 		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();		
-		
+
 		UserAccountModel users = userRepository.findByUsername(userDetails.getUsername()).orElse(null);
 
 		UserDetailModel user = null;
@@ -87,61 +86,7 @@ public class MainController {
 		// Create new user's account
 		UserAccountModel user = new UserAccountModel(signUpRequest.getUsername(), 
 							 encoder.encode(signUpRequest.getPassword()));
-
-		// List<String> strRoles = signUpRequest.getRole();
-		// System.out.println("---------------------------------------");
-		// System.out.println(signUpRequest.getUsername());
-		// System.out.println(strRoles);
-
-        // Set<Roles> roles = new HashSet<>();
-		
-			// strRoles.forEach(role -> {
-			// 	switch (role) {
-            //     case "admin":
-			// 		Roles adminRole = roleRepository.findByRoleName(ERole.ROLE_ADMIN)
-			// 				.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-			// 		roles.add(adminRole);
-			// 		break;
-            //     case "section manager":
-			// 		Roles sectRole = roleRepository.findByRoleName(ERole.ROLE_SECTIONMANAGER)
-			// 				.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-			// 		roles.add(sectRole);
-			// 		break;
-            //     case "assistant manager":
-			// 		Roles assistRole = roleRepository.findByRoleName(ERole.ROLE_ASSISTANTMANAGER)
-			// 				.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-			// 		roles.add(assistRole);
-			// 		break;
-            //     case "department manager":
-			// 		Roles dptRole = roleRepository.findByRoleName(ERole.ROLE_DEPARTMENTMANAGER)
-			// 				.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-			// 		roles.add(dptRole);
-			// 		break;
-            //     case "karyawan kontrak":
-			// 		Roles kontrakRole = roleRepository.findByRoleName(ERole.ROLE_KARYAWANKONTRAK)
-			// 				.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-			// 		roles.add(kontrakRole);
-			// 		break;
-			// 	case "pelamar":
-			// 		Roles modRole = roleRepository.findByRoleName(ERole.ROLE_PELAMAR)
-			// 				.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-			// 		roles.add(modRole);
-
-			// 		break;
-			// 	case "karyawan tetap":
-			// 		Roles tetapRole = roleRepository.findByRoleName(ERole.ROLE_KARYAWANTETAP)
-			// 				.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-			// 		roles.add(tetapRole);
-			// 		break;
-			// 	default:
-			// 		Roles userRole = roleRepository.findByRoleName(ERole.ROLE_KARYAWANTETAP)
-			// 				.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-			// 		roles.add(userRole);
-			// 	}
-			// });
-		
-
-		// user.setRoles(roles);
+							 
 		userRepository.save(user);
 
 		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
