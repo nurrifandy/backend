@@ -1,8 +1,12 @@
 package backend.dkn.model;
 
+import java.util.List;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "userAccount", uniqueConstraints = {
@@ -23,6 +27,10 @@ public class UserAccountModel{
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "userAccount")
     private UserDetailModel userDetail;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+    @JsonIgnore
+    private List<SavingsAccountModel> savings;
 
     public UserAccountModel(){
 
@@ -63,6 +71,14 @@ public class UserAccountModel{
 
     public void setUserDetail(UserDetailModel userDetail) {
         this.userDetail = userDetail;
+    }
+
+    public List<SavingsAccountModel> getSavings() {
+        return savings;
+    }
+
+    public void setSavings(List<SavingsAccountModel> savings) {
+        this.savings = savings;
     }
 
 }
