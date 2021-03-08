@@ -24,8 +24,11 @@ import backend.dkn.model.UserAccountModel;
 import backend.dkn.model.UserDetailModel;
 import backend.dkn.payload.request.LoginRequest;
 import backend.dkn.payload.request.SignUpRequest;
+import backend.dkn.payload.response.JwtResponse;
+import backend.dkn.payload.response.MessageResponse;
 import backend.dkn.security.jwt.JwtUtils;
 import backend.dkn.security.services.UserDetailsImpl;
+import backend.dkn.repository.UserDetailDb;
 import backend.dkn.repository.login.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,13 +41,10 @@ public class MainController {
 	AuthenticationManager authenticationManager;
 
 	@Autowired
-	UserDB userDb;
+	UserDetailDb userDetailDb;
 
 	@Autowired
 	UserRepository userRepository;
-
-	@Autowired
-	RolesRepository roleRepository;
 
 	@Autowired
 	PasswordEncoder encoder;
@@ -62,25 +62,21 @@ public class MainController {
 		String jwt = jwtUtils.generateJwtToken(authentication);
 		
 		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();		
-		List<String> roles = userDetails.getAuthorities().stream()
-				.map(item -> item.getAuthority())
-				.collect(Collectors.toList());
-
+		
 		UserAccountModel users = userRepository.findByUsername(userDetails.getUsername()).orElse(null);
 
 		UserDetailModel user = null;
-		if (userDb.findByUsers(users).size() != 0){
-			user = userDb.findByUsers(users).get(0);
+		if (userDetailDb.findByUserAccount(users).size() != 0){
+			user = userDetailDb.findByUserAccount(users).get(0);
 		}
 		return ResponseEntity.ok(new JwtResponse(jwt, 
 												 userDetails.getId(), 
 												 userDetails.getUsername(), 
-												 roles,
 												 user
                                                  ));
 	}
 
-	@PostMapping("/signup")
+	@PutMapping("/signup")
 	public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
 		if (userRepository.existsByUsername(signUpRequest.getUsername())) {
 			return ResponseEntity
@@ -92,12 +88,12 @@ public class MainController {
 		UserAccountModel user = new UserAccountModel(signUpRequest.getUsername(), 
 							 encoder.encode(signUpRequest.getPassword()));
 
-		List<String> strRoles = signUpRequest.getRole();
+		// List<String> strRoles = signUpRequest.getRole();
 		// System.out.println("---------------------------------------");
 		// System.out.println(signUpRequest.getUsername());
 		// System.out.println(strRoles);
 
-        Set<Roles> roles = new HashSet<>();
+        // Set<Roles> roles = new HashSet<>();
 		
 			// strRoles.forEach(role -> {
 			// 	switch (role) {
@@ -145,7 +141,7 @@ public class MainController {
 			// });
 		
 
-		user.setRoles(roles);
+		// user.setRoles(roles);
 		userRepository.save(user);
 
 		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));

@@ -5,7 +5,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @Entity
-@Table(name = "user_account", uniqueConstraints = {
+@Table(name = "userAccount", uniqueConstraints = {
     @UniqueConstraint(columnNames = "username")
 })
 public class UserAccountModel{
@@ -21,7 +21,7 @@ public class UserAccountModel{
     @Size(max = 255)
     private String password;
 
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "user_account")
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "userAccount")
     private UserDetailModel userDetail;
 
     public UserAccountModel(){
