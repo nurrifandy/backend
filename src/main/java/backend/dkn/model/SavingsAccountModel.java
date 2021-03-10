@@ -34,6 +34,7 @@ public class SavingsAccountModel {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_user", referencedColumnName = "id",nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
+    @JsonIgnore
     private UserAccountModel user;
 
     public Integer getId() {
