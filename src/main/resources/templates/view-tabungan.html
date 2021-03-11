@@ -21,19 +21,24 @@
         <div class="m-3">
             <a th:href="@{/}"><button class="btn btn-warning">kembali</button></a>
         </div>
-        <div th:each="saving: ${savings}" class="m-3 card">
-            <div class="card-body">
-                <div>Nama Tabungan : <span th:text="${saving.nama}"></span></div>
-                <div>Saldo Tabungan : <span th:text="${saving.saldo}"></span></div>
-                <div th:if="${saving.transaction.size()==0}">
-                    Tidak ada transaksi untuk tabungan ini.
-                </div>
-                <div th:unless="${saving.transaction.size()==0}">
-                    <div th:each="transaksi:${saving.transaction}">
-                        <div>Jenis Transaksi : <span th:text="${transaksi.jenis}"></span> , Nominal Transaksi : <span th:text="${transaksi.nominal}"></span> , Tanggal Transaksi : <span th:text="${transaksi.tanggalTransaksi}"></span></div>
+        <div th:if="!${nullValue}">
+            <div th:each="saving: ${savings}" class="m-3 card">
+                <div class="card-body">
+                    <div>Nama Tabungan : <span th:text="${saving.nama}"></span></div>
+                    <div>Saldo Tabungan : <span th:text="${saving.saldo}"></span></div>
+                    <div th:if="${saving.transaction.size()==0}">
+                        Tidak ada transaksi untuk tabungan ini.
+                    </div>
+                    <div th:unless="${saving.transaction.size()==0}">
+                        <div th:each="transaksi:${saving.transaction}">
+                            <div>Jenis Transaksi : <span th:text="${transaksi.jenis}"></span> , Nominal Transaksi : <span th:text="${transaksi.nominal}"></span> , Tanggal Transaksi : <span th:text="${transaksi.tanggalTransaksi}"></span></div>
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
+        <div th:unless="!${nullValue}">
+            <div class="alert alert-danger">Mohon maaf, anda tidak memiliki tabungan untuk saat ini.</div>
         </div>
     </div>
 </body>
