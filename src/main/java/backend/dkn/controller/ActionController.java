@@ -65,11 +65,11 @@ public class ActionController {
         }
     }
 
-    @PostMapping("/account/deposit/{namaTabungan}")
+    @PostMapping("/account/deposit")
     public String depositSaldo(@Valid @RequestBody TransactionRequestModel transaction,
     BindingResult bindingResult,
-    HttpServletRequest request,
-    @PathVariable (value = "namaTabungan") String namaTabungan){
+    HttpServletRequest request
+    ){
         if(bindingResult.hasFieldErrors()){
             throw new ResponseStatusException(
                 HttpStatus.BAD_REQUEST, "Request body has invalid type or missing field");
@@ -85,7 +85,7 @@ public class ActionController {
                 }
 
                 for(SavingsAccountModel saving : savings){
-                    if(namaTabungan.equalsIgnoreCase(saving.getNama())){
+                    if(transaction.getNamaTabungan().equalsIgnoreCase(saving.getNama())){
                         // update saldo
                         Integer newSaldo = saving.getSaldo() + transaction.getNominal();
                         saving.setSaldo(newSaldo);
@@ -107,11 +107,10 @@ public class ActionController {
         }
     }
 
-    @PostMapping("/account/withdraw/{namaTabungan}")
+    @PostMapping("/account/withdraw")
     public String withdrawSaldo(@Valid @RequestBody TransactionRequestModel transaction,
     BindingResult bindingResult,
-    HttpServletRequest request,
-    @PathVariable (value = "namaTabungan") String namaTabungan){
+    HttpServletRequest request){
         if(bindingResult.hasFieldErrors()){
             throw new ResponseStatusException(
                 HttpStatus.BAD_REQUEST, "Request body has invalid type or missing field");
@@ -127,7 +126,7 @@ public class ActionController {
                 }
 
                 for(SavingsAccountModel saving : savings){
-                    if(namaTabungan.equalsIgnoreCase(saving.getNama())){
+                    if(transaction.getNamaTabungan().equalsIgnoreCase(saving.getNama())){
                         // update saldo
                         if(saving.getSaldo()<transaction.getNominal()){
                             return "Your balance is insufficient!";
