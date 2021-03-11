@@ -22,9 +22,11 @@ import backend.dkn.model.SavingsAccountModel;
 import backend.dkn.model.TransactionModel;
 import backend.dkn.model.TransactionRequestModel;
 import backend.dkn.model.UserAccountModel;
+import backend.dkn.model.UserDetailModel;
 import backend.dkn.repository.SavingsAccountDb;
 import backend.dkn.repository.TransactionDb;
 import backend.dkn.repository.UserAccountDb;
+import backend.dkn.repository.UserDetailDb;
 import backend.dkn.service.SavingsAccountService;
 
 @CrossOrigin(origins = "*")
@@ -41,6 +43,9 @@ public class ActionController {
 
     @Autowired
     private TransactionDb transactionDb;
+
+    @Autowired
+    private UserDetailDb userDetailDb;
 
     @PutMapping("/account")
     public String createSavingsAccount(@Valid @RequestBody SavingsAccountModel savings, BindingResult bindingResult, HttpServletRequest request){
@@ -149,14 +154,35 @@ public class ActionController {
 
     @GetMapping("/accounts")
     public List<SavingsAccountModel> findAllSavings(HttpServletRequest request){
-            String username = request.getUserPrincipal().getName();
-            UserAccountModel user = userAccountDb.findByUsername(username).get(0);
-            if(user != null){
-                List<SavingsAccountModel> savings = savingsAccountDb.findByUser(user);
-                if(savings != null){
-                    return user.getSavings();
-                }
+        String username = request.getUserPrincipal().getName();
+        UserAccountModel user = userAccountDb.findByUsername(username).get(0);
+        if(user != null){
+            List<SavingsAccountModel> savings = savingsAccountDb.findByUser(user);
+            if(savings != null){
+                return user.getSavings();
             }
-            return null;
         }
+        return null;
+    }
+
+    @PostMapping("/account/create-profil")
+    public String viewProfil(@Valid @RequestBody UserDetailModel user,
+    BindingResult bindingResult,
+    HttpServletRequest request){
+        if(bindingResult.hasFieldErrors()){
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST, "Request body has invalid type or missing field");
+        }
+        else{
+            String username = request.getUserPrincipal().getName();
+            UserAccountModel userAccount = userAccountDb.findByUsername(username).get(0);
+            userAccount.setUserDetail(user);
+            userAccountDb.save(userAccount);
+
+            // save detail
+            user.setUserAccount(userAccount);
+            userDetailDb.save(user);
+            return "Profile Created!";
+        }
+    }
 }
