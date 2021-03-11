@@ -28,7 +28,6 @@ public class SavingsAccountModel {
     private Integer saldo;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "savings")
-    @JsonIgnore
     private List<TransactionModel> transaction;
 
     @ManyToOne(fetch = FetchType.EAGER)
